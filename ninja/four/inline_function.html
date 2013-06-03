@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="../assertion.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <ul id="results"></ul>
+  <script>
+    var ninja = {
+      chirp: function signal(n) {
+        return n > 1 ? signal(n - 1) + "-chirp" : "chirp";
+      },
+
+      jump: function(n) {
+        return n + "times jump!!";
+      }
+    };
+
+    console.log(ninja);
+
+    assert(ninja.chirp(3) === "chirp-chirp-chirp",
+        "Works as we would expected it to!");
+
+    var samurai = {
+      chirp: ninja.chirp
+    }
+
+    ninja = {};
+
+    assert(samurai.chirp(3) === "chirp-chirp-chirp",
+        "This method correctly calls itself!");
+
+    var fn = new Function("x", "return 2 * x");
+    console.log(fn);
+
+    var ninja2 = function myNinja() {
+      assert(ninja2 === myNinja, "This function is named two things at once!");
+    };
+
+    ninja2();
+
+    assert(typeof myNinja === 'undefined',
+           "But myNinja isn't defined outside of the function.");
+
+  </script>
+</body>
+</html>
