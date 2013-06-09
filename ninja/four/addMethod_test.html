@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="../assertion.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<ul id="results"></ul>
+<script>
+  function addMethod(object, name, fn) {
+    var old = object[name];
+    console.log(old);
+    object[name] = function() {
+      if (fn.length === arguments.length) {
+        return fn.apply(this, arguments)
+      }
+      else if (typeof old === 'function') {
+        return old.apply(this, arguments);
+      }
+    };
+  }
+
+  var ninjas = {
+    values: ['Jack Bauer', 'Wayne Palmer', 'David Palmer']
+  };
+
+  addMethod(ninjas, 'find', function() {
+    return this.values;
+  });
+
+  addMethod(ninjas, 'find', function(name) {
+    console.log(this);
+    var ret = [];
+    for (var i = 0; i < this.values.length; i++) {
+      if (this.values[i].indexOf(name) === 0) {
+        ret.push(this.values[i]);
+      }
+    }
+    return ret;
+  });
+
+  addMethod(ninjas, 'find', function(first, last) {
+    console.log(this);
+    var ret = [];
+    for (var i = 0; i < this.values.length; i++) {
+      if (this.values[i] === (first + " " + last)) {
+        ret.push(this.values[i]);
+      }
+    }
+    return ret;
+  });
+
+  assert(ninjas.find().length === 3, 'Found all ninjas');
+  assert(ninjas.find('Jack').length === 1, 'Found ninja by first name');
+  assert(ninjas.find('Wayne', 'Palmer').length === 1, 'Found ninja by first and last name');
+  assert(ninjas.find('David', 'Palmer', 'Jr') == null, 'Found nothing');
+  console.log(ninjas.find('David', 'Palmer', 'Jr'));
+
+</script>
+</body>
+</html>
+
