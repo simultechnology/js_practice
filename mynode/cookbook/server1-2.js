@@ -9,10 +9,13 @@ var mimeTypes = {
 };
 
 http.createServer(function (request, response) {
-  var lookup = path.basename(decodeURI(request.url)) || 'index.html',
-  f = 'cookbook/content/' + lookup;
+  //var lookup = path.basename(decodeURI(request.url)) || 'index.html',
+  var lookup = path.basename(decodeURI(request.url)) || 'closures_callback.html',
+  //f = 'mynode/cookbook/content/' + lookup;
+  f = 'ninja/five/' + lookup;
 //  console.log(fs.realpathSync(f));
   fs.exists(f, function(exists) {
+    console.log(exists);
     if (exists) {
       fs.readFile(f, function(err, data) {
         if (err) {
@@ -30,4 +33,4 @@ http.createServer(function (request, response) {
     response.writeHead(404);
     response.end();
   });
-}).listen(7788);
+}).listen(7676);
