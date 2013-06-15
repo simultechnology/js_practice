@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="../assertion.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<ul id="results"></ul>
+<script>
+  Function.prototype.partial = function() {
+    var fn = this, args = Array.prototype.slice.call(arguments);
+    return function() {
+      var arg = 0;
+      for (var i = 0; i < args.length && arg < arguments.length; i++) {
+        if (args[i] === undefined) {
+          args[i] = arguments[arg++]
+        }
+      }
+      console.log(args);
+      console.log(fn);
+      console.log(this);
+      return fn.apply(this, args);
+    };
+  };
+
+  Function.prototype.curry = function() {
+    var fn = this, args = Array.prototype.slice.call(arguments);
+    return function() {
+      console.log(arguments);
+      return fn.apply(this, args.concat(
+        Array.prototype.slice.call(arguments)));
+    };
+  };
+
+  String.prototype.csv = String.prototype.split.partial(/,\s*/);
+
+  var results = ("Atsui, Jin, Imamu").csv(/\./);
+
+  assert(results[0] === "Atsui" &&
+         results[1] === "Jin" &&
+         results[2] === "Imamu", "The text values were split properly")
+
+  String.prototype.csv2 = String.prototype.split.curry(/,\s*/);
+  results = ("Atsui, Jin, Imamu").csv2(/\s/);
+  console.log(results);
+
+  assert(results[0] === "Atsui" &&
+         results[1] === "Jin" &&
+         results[2] === "Imamu", "The text values were split properly");
+
+  var bindClick = document.body.addEventListener.partial("click", undefined, false);
+  bindClick.apply(document.body, [function() {
+    assert(true, "Click event bound via curried function");
+  }]);
+
+  var delay = setTimeout.partial(undefined, 1000);
+  delay(function() {
+    assert(true, "A call to this function will be delayed 1 second");
+  });
+
+</script>
+</body>
+</html>
+
