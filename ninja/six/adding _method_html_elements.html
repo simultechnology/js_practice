@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="../assertion.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div id="parent">
+    <div id="a">I'm going to be removed.</div>
+    <div id="b">Me too!</div>
+  </div>
+<ul id="results"></ul>
+<script>
+  HTMLElement.prototype.remove2 = function() {
+    if (this.parentNode) {
+      this.parentNode.removeChild(this);
+    }
+  };
+
+  var a = document.getElementById('a');
+  a.parentNode.removeChild(a);
+
+  document.getElementById('b').remove2();
+
+  assert(!document.getElementById('a'), 'a is gone.');
+  assert(!document.getElementById('b'), 'b is gone too.')
+</script>
+</body>
+</html>
+

@@ -51,7 +51,6 @@
 
   console.log(Sam.prototype);
 
-
   sam.printName();
 
   var sam2 = new Sam('AAA', 'hoge');
@@ -71,15 +70,15 @@
   var created2 = Object.create2(Sam.prototype);
   console.log(created2);
 
-  created2.constructor.prototype.jump = function() {
-    console.log('new jump!!!');
-  }
-
   var sam3 = new Sam('aa', 'sss');
   sam3.jump();
 
   var peter = new Peter();
   peter.jump();
+
+  var created3 = Object.create2(sam2);
+  console.log(sam2);
+  console.log(created3);
 
 </script>
 </body>
