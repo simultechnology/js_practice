@@ -9,6 +9,11 @@
   <p>Hello 2</p>
   <p>Hello 3</p>
   <div>Test</div>
+  <div id="data-sample">
+    <p>Hello 1</p>
+    <p>Hello 2</p>
+    <p>Hello 3</p>
+  </div>
   <ul id="results"></ul>
   <script src="js/d3.js" type="text/javascript" charset="utf-8"></script>
   <script>
@@ -19,7 +24,7 @@
         "font-weight": "bold"
       });
 
-    var div = d3.selectAll("div");
+    var div = d3.select("div");
 
     function changeDivStyleByTimer() {
       div.style("font-size", function() {
@@ -28,6 +33,23 @@
     }
 
     setInterval(changeDivStyleByTimer, 500);
+
+    d3.select("body").append("p").text("hello 4");
+
+    var p2 = d3.select("div#data-sample").selectAll("p");
+    var dataset = [12, 56, 897, 9999];
+
+    var update = p2.data(dataset);
+    var enter = update.enter();
+
+    update.text(function(d, i) {
+      return i + " : " + d;
+    });
+
+    enter.append("p").text(function(d) {
+      return "enter : " + d;
+    });
+
   </script>
 </body>
 </html>
