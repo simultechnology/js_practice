@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+<body>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script>
+    var svg = d3.select("body").append("svg").attr({
+      width: '100%', height: '100%'
+    });
+
+    var path = d3.geo.path();
+    var projection = d3.geo.mercator().scale(80000).center([139.376683, 35.722776])
+    path.projection(projection);
+
+    d3.json("data/tokyo.geojson", function(json) {
+      console.log(json);
+      svg.append("path")
+        .datum(json)
+        .attr("d", path)
+        .attr("fill-opacity", 0.5)
+        .attr("fill", "#ffff22")
+        .attr("stroke", "#111");
+    });
+
+  </script>
+</body>
+</html>
+

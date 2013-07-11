@@ -59,10 +59,10 @@
       .attr("class", function(d) { return "subunit " + d.id; })
       .attr("d", path);
 
-    svg.append("path")
-      .datum(topojson.mesh(jp, jp.objects.subunit, function(a, b) { return a !== b; }))
-      .attr("d", path)
-      .attr("class", "subunit-boundary");
+//    svg.append("path")
+//      .datum(topojson.mesh(jp, jp.objects.subunit, function(a, b) { return a !== b; }))
+//      .attr("d", path)
+//      .attr("class", "subunit-boundary");
 
     svg.append("path")
       .datum(topojson.object(jp, jp.objects.places))

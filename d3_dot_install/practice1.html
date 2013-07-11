@@ -17,8 +17,7 @@
   <ul id="results"></ul>
   <script src="js/d3.js" type="text/javascript" charset="utf-8"></script>
   <script>
-    var p = d3.select("body").selectAll("p");
-    p.text("hello from d3!")
+    d3.select("body").selectAll("p").text("hello from d3!")
       .style({
         "font-size": "28px",
         "font-weight": "bold"

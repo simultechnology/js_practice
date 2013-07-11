@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+<style type="text/css">
+  .subunit.JPB { fill: #6600cc; }
+  .subunit.JPH { fill: #dcd; }
+  .subunit.JPI { fill: #00cc66; }
+  .subunit.JPK { fill: #ddc; }
+  .subunit.JPO { fill: #cc6666; }
+  .subunit.JPS { fill: #cdc; }
+  .subunit.JPV { fill: #ccd; }
+  .subunit.JPX { fill: #1111cc; }
+  .subunit.JPY { fill: #cdd; }
+
+  .subunit-boundary {
+    fill: none;
+    stroke: #777;
+    stroke-dasharray: 2,2;
+    stroke-linejoin: round;
+  }
+
+  .place,
+  .place-label {
+    fill: #444;
+  }
+
+  text {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    pointer-events: none;
+  }
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v0.min.js"></script>
+<script>
+
+  var svg = d3.select("body").append("svg")
+    .attr("width", '100%')
+    .attr("height", '100%');
+
+  var projection = d3.geo.mercator()
+    .center([139.7701350000001, 35.705352])
+    .scale(2000)
+    .translate([window.outerWidth / 2, window.outerHeight / 7 * 3]);
+
+  var path = d3.geo.path()
+    .projection(projection);
+
+  d3.json("data/jp.json", function(error, jp) {
+
+    svg.selectAll(".subunit")
+      .data(topojson.object(jp, jp.objects.subunit).geometries)
+      .enter().append("path")
+      .attr("class", function(d) { return "subunit " + d.id; })
+      .attr("d", path);
+
+    svg.append("path")
+      .datum(topojson.object(jp, jp.objects.places))
+      .attr("d", path)
+      .attr("class", "place");
+
+    svg.selectAll(".place-label")
+      .data(topojson.object(jp, jp.objects.places).geometries)
+      .enter().append("text")
+      .attr("class", "place-label")
+      .attr("transform", function(d) { return "translate(" + projection(d.coordinates) + ")"; })
+      .attr("x", function(d) { return d.coordinates[0] > -1 ? 6 : -6; })
+      .attr("dy", ".35em")
+      .style("text-anchor", function(d) { return d.coordinates[0] > -1 ? "start" : "end"; })
+      .text(function(d) { return d.properties.NAME; });
+  });
+
+</script>
+</body>
+</html>
+

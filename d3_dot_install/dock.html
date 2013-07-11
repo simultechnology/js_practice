@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+<body>
+  <script src="js/d3.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+
+    var dataset = [];
+    for (var i =0; i < 10; i++) {
+      dataset.push(40);
+    }
+
+    var w = 800;
+    var h = 400;
+
+    var svg = d3.select("body").append("svg").attr({
+      width: w, height: h
+    });
+    svg.selectAll("circle")
+      .data(dataset)
+      .enter()
+      .append("circle")
+      .on("mouseover", function(d) {
+        d3.select(this).transition().duration(500)
+          .attr({r: 60, cy: 150});
+      })
+      .on("mouseout", function(d) {
+        d3.select(this).transition().duration(500)
+          .attr({r: 40,cy: 200});
+      })
+      .attr({
+        cx: function(d, i) { return 40 + (i * 80); },
+        cy: h / 2,
+        r: function(d) { return d; },
+        fill: "#ff7fbf"
+      });
+
+  </script>
+</body>
+</html>
+
