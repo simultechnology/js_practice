@@ -12,14 +12,13 @@
     });
 
     var path = d3.geo.path();
-    var projection = d3.geo.mercator().scale(160000).center([139.176683, 35.822776])
+    var projection = d3.geo.mercator().scale(80000).center([139.176683, 35.822776])
     path.projection(projection);
 
     d3.json("data/tokyo.geojson", function(json) {
-      svg.selectAll("path")
-        .data(json.features)
-        .enter()
-        .append("path")
+      console.log(json);
+      svg.append("path")
+        .datum(json)
         .attr("d", path)
         .attr("fill-opacity", 0.5)
         .attr("fill", "#ffff22")
