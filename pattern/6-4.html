@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="assertion.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<ul id="results"></ul>
+<script>
+
+  function Parent(name) {
+    this.name = name || 'Adam';
+  }
+
+  Parent.prototype.say = function() {
+    return this.name;
+  };
+
+  function Child(a, b, c, d) {
+    Parent.apply(this, arguments);
+  }
+
+  function Article() {
+    console.log(this);
+    this.tags = ['js', 'css'];
+  }
+  Article.prototype.tell = function() {
+    return 'tell about ' + (this.tags || []).join(' ');
+  };
+  var article = new Article();
+
+  function BlogPost() {}
+  BlogPost.prototype = (function() {
+    var f = function() {};
+    f.prototype = Article.prototype;
+    return new f();
+  })();
+//  BlogPost.prototype = article;
+  var blog = new BlogPost();
+  console.log(article.tell());
+  BlogPost.prototype.constructor.prototype.tell = function() {return 'fuck!!'};
+  console.log(Article.prototype.tell);
+  console.log(BlogPost.prototype.constructor);
+  console.log(new Article().constructor);
+
+  function StaticPage() {
+    console.log('StaticPage!');
+    Article.call(this);
+  }
+  var page = new StaticPage();
+  console.log(page);
+
+  assert(article.hasOwnProperty('tags'), 'article has own property \'tags\'');
+  assert(blog.hasOwnProperty('tags'), 'blog has own property \'tags\'');
+  assert(page.hasOwnProperty('tags'), 'page has own property \'tags\'');
+
+  //blog.tags.push('html');
+  page.tags.push('php');
+  assert(article.tags.join(',') === 'js,css,html', 'blog add property in article');
+
+  var article2 = new Article();
+  console.log(article);
+  console.log(article2);
+
+</script>
+</body>
+</html>
+

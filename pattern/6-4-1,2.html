@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="assertion.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<ul id="results"></ul>
+<script>
+  function Parent(name) {
+    this.name = name || 'Adam';
+  }
+  Parent.prototype.say = function() {
+    return this.name;
+  };
+  function Child(name) {
+    Parent.apply(this, arguments);
+  }
+
+  var kid = new Child('Patrick');
+  assert(kid.name === 'Patrick', 'Child object has property \'name\'');
+  assert(typeof kid.say === "undefined", 'Child object can\'t find say function');
+
+  function Cat() {
+    this.leg = 4;
+    this.say = function() {
+      return 'meaowww';
+    };
+  }
+  function Bird() {
+    this.wings = 2;
+    this.fly = true;
+  }
+  function CatWings() {
+    Cat.apply(this);
+    Bird.apply(this);
+  }
+
+  var jane = new CatWings();
+  console.log(jane);
+
+</script>
+</body>
+</html>
+

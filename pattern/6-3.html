@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="assertion.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<ul id="results"></ul>
+<script>
+
+  function Parent(name) {
+    this.name = name || 'Adam';
+  }
+
+  Parent.prototype.say = function() {
+    return this.name;
+  };
+
+  function Child(name) {
+    if (name) {
+      this.name = name;
+    }
+  }
+
+  inherit(Child, Parent);
+
+  function inherit(C, P) {
+    C.prototype = new P();
+  }
+
+  var kid = new Child();
+  console.log(kid);
+  assert(kid.say() === 'Adam', 'inherit from Parent');
+
+  var s = new Child('Seth');
+  console.log(s);
+  assert(s.say() === 'Seth', 'inherit from Parent');
+
+</script>
+</body>
+</html>
