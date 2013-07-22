@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="assertion.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<ul id="results"></ul>
+<script>
+  function extend(parent, child) {
+    var i;
+    child = child || {};
+    for (i in parent) {
+      if (parent.hasOwnProperty(i)) {
+        child[i] = parent[i];
+      }
+    }
+    return child;
+  }
+
+  var dad = { name: 'Adam' };
+  var kid = extend(dad);
+  assert(kid.name === 'Adam', 'kid inherit property from parent');
+
+  var dad2 = {
+    counts: [1, 2, 3],
+    reads: { paper: true }
+  };
+  var kid2 = extend(dad2);
+  kid2.counts.push(4);
+  assert(dad2.counts.toString() === '1,2,3,4', 'parent\'s counts has 4 elements');
+  assert(dad2.reads === kid2.reads, 'dad2.reads === kid2.reads');
+
+  function extendDeep(parent, child) {
+    var i,
+        toStr = Object.prototype.toString,
+        astr = "[object Array]";
+
+    child = child || {};
+
+    for (i in parent) {
+      if (parent.hasOwnProperty(i)) {
+        if (typeof parent[i] === "object") {
+          child[i] = (toStr.call(parent[i]) === astr) ? [] : {};
+          console.log(i);
+          console.log(child);
+          extendDeep(parent[i], child[i]);
+        }
+        else {
+          child[i] = parent[i];
+        }
+      }
+    }
+    return child;
+  }
+
+  var dad3 = {
+    counts: [1, 2, 3],
+    reads: { paper: true }
+  };
+  var kid3 = extendDeep(dad3);
+
+  kid3.counts.push(4);
+  assert(kid3.counts.toString() === '1,2,3,4', '1,2,3,4');
+  assert(dad3.counts.toString() === '1,2,3', '1,2,3');
+
+  assert(!(dad3.reads === kid3.reads), 'dad3.reads !== kid3.reads');
+  kid3.reads.paper = false;
+  kid3.reads.web = true;
+  assert(dad3.reads.paper, 'dad3.reads.paper is true');
+
+  console.log('start dad4!');
+
+  var dad4 = {
+    obj: {
+      reads: [3, 56, 89]
+    }
+  };
+  var kid4 = extendDeep(dad4);
+  console.log(kid4);
+
+  var arr = [1, 4, 55];
+  console.log(arr.hasOwnProperty(2));
+  console.log(arr.hasOwnProperty(4));
+
+</script>
+</body>
+</html>
+
