@@ -39,6 +39,17 @@
       return callback('Hola');
     }
   };
+  console.log(yetanother.method(one.say));
+
+  function myBind(o, m) {
+    return function() {
+      //return m.apply(o, [].slice.call(arguments));
+      return m.apply(o, arguments);
+    };
+  }
+  var twoSay = myBind(two, one.say);
+  console.log(twoSay('yo'));
+
 
 </script>
 </body>
