@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="../assertion.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <ul id="results"></ul>
+<script>
+
+    var newObject = {};
+    // プロパティを設定する
+    Object.defineProperty(newObject, 'someKey', {
+        value: 'for samples',
+        writable: true,
+        enumerable: true,
+        configurable: true
+    });
+
+    assert(newObject.someKey === 'for samples', 'property was set!');
+
+    var defineProp = function(obj, key, value) {
+        var config = {};
+        config.value = value;
+        Object.defineProperty(obj, key, config);
+    };
+
+    var person = Object.create(null);
+    defineProp(person, 'car', 'Delorean');
+    defineProp(person, 'deteOfBirth', '1981');
+    defineProp(person, 'hasBeard', false);
+
+    assert(person.car === 'Delorean', 'car was set!');
+    assert(person.deteOfBirth === '1981', 'deteOfBirth was set!');
+    assert(person.hasBeard === false, 'hasBeard was set!');
+
+    Object.defineProperties(newObject, {
+
+        someKey: {
+            value: "Hello World",
+            writable: true
+        },
+
+        anotherKey: {
+            value: 'Foo bar',
+            writable: false
+        }
+    });
+
+    assert(newObject.someKey === 'Hello World', 'property was changed!');
+    assert(newObject.anotherKey === 'Foo bar', 'property was set!');
+
+    newObject.anotherKey === 'hoge';
+    assert(newObject.anotherKey !== 'hoge', 'property was not changed!');
+
+    var driver = Object.create(person);
+    defineProp(driver, 'topSpeed', '100mph');
+
+    assert(driver.deteOfBirth === '1981', 'driver inherit from person');
+    assert(driver.topSpeed === '100mph', 'property was set!');
+
+    function Car(model, year, miles) {
+        this.model = model;
+        this.year = year;
+        this.miles = miles;
+
+        this.toString = function() {
+            return this.model + ' has done ' + this.miles + ' miles';
+        };
+    }
+
+    Car.prototype.toCarString = function() {
+        return this.model + ' has done ' + this.miles + ' miles';
+    };
+
+    var civic = new Car("Honda Civic", 2009, 20000);
+    var mondeo = new Car("Ford Mondeo", 2010, 5000);
+
+    console.log(civic.toString());
+    console.log(mondeo.toString());
+
+    console.log(civic.toCarString());
+    console.log(mondeo.toCarString());
+
+</script>
+</body>
+</html>
+
