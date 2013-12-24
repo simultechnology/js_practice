@@ -1,0 +1,17 @@
+{
+  "name": "practice",
+  "version": "0.0.1",
+  "homepage": "https://github.com/simultechnology/js_practice",
+  "authors": [
+    "takatsugu ishikawa <tissi0708@gmail.com>"
+  ],
+  "description": "codes that i write while studing backbone.js",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "backbone": "~1.1.0",
+    "jquery": "~2.0.3",
+    "underscore": "~1.5.2"
+  }
+}
