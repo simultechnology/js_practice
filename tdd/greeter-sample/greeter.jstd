@@ -1,0 +1,4 @@
+load:
+  - src/Greeter.js
+test:
+  - test/GreeterTest.js
