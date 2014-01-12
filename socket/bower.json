@@ -1,0 +1,17 @@
+{
+  "name": "socket",
+  "version": "0.0.0",
+  "homepage": "https://github.com/simultechnology/js_practice",
+  "authors": [
+    "takatsugu ishikawa <tissi0708@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "author": "Web+DB Press",
+  "name": "socket-io-sample",
+  "version": "0.0.0",
+  "dependencies": {
+    "socket.io": "0.9",
+    "express": "3.0"
+  }
+}

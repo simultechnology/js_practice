@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  .container
+    .row
+      .span4.offset4
+        .contents
+          form.well(method='POST', action='/create')
+            div
+              label TITLE
+              input(type='text', name='title', value=title)
+            div
+              label SLUG
+              input(type='text', name='slug')
+            div
+              label 記事本文
+              textarea(name='body')
+            .control-group
+              button.btn(type='submit', name='stories') 登録
