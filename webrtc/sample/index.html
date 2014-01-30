@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="js/jquery.js"></script>
+  <script src="js/peer.js"></script>
+</head>
+<body>
+
+  <script>
+    $(document).ready(function() {
+      var peer = new Peer({key: 'c19ba4aa-5e7e-11e3-922a-9dbb37b59888'});
+
+      peer.on('open', function(id) {
+        console.log('My peer ID is : ' + id);
+      });
+
+    });
+  </script>
+</body>
+</html>

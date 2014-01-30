@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Socket.io practice</title>
+</head>
+<body>
+  <form id="myForm">
+    <select id="rooms">
+      <option value="room-1">Room 1</option>
+      <option value="room-2">Room 2</option>
+    </select>
+
+    <input type="text" id="msg"><input type="submit" value="Send!">
+  </form>
+  <ul id="logs">
+
+  </ul>
+  <div id="news"></div>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    $(function() {
+      var chat = io.connect('http://127.0.0.1:1337/chat'),
+          news = io.connect('http://127.0.0.1:1337/news');
+
+      $('#myForm').on('submit', function(e) {
+        e.preventDefault();
+        chat.json.emit('emit_from_client', {
+          msg: $('#msg').val(),
+          room: $('#rooms').val()
+        });
+        $('#msg').val('').focus();
+      });
+      chat.on('emit_from_server', function(data) {
+        $('#logs').append($('<li>').text(data));
+      });
+      news.on('emit_from_server', function(data) {
+        $('#news').text(data);
+      });
+    });
+  </script>
+</body>
+</html>

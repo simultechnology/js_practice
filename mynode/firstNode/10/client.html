@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Socket.IO Sample</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    $(document).ready(function() {
+      var socket = io.connect();
+
+      socket.on('greeting', function(data, fn) {
+        var answer = confirm(data.message);
+        fn(answer);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>Socket.IO sample code 01</h1>
+</body>
+</html>
