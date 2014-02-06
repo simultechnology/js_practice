@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+<body>
+  <input id="message" type="text"><button id="send">送信する</button>
+  <div id="output"></div>
+  <script>
+    (function() {
+      var ws = new WebSocket('ws://localhost:8281');
+      var output = document.getElementById('output');
+      var send = document.getElementById('send');
+      
+      function logStr(eventStr, msg) {
+        return '<div>' + eventStr + ' : ' + msg + '</div>';
+      }
+      
+      send.addEventListener('click', function() {
+        var msg = document.getElementById('message').value;
+        ws.send(msg);
+        output.innerHTML += logStr('送信', msg);
+      });
+
+      ws.onmessage = function(e) {
+        output.innerHTML += logStr('受信', e.data);
+      };
+
+      ws.onclose = function(e) {
+        output.innerHTML += logStr('切断', e.code + ' - ' + e.type);
+      };
+
+    })();
+  </script>
+</body>
+</html>
