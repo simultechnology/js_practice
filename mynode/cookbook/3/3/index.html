@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <meta charset="utf-8">
+  <title></title>
+
+
+</head>
+<style type="text/css">
+  #frm, #raw {display: block; float: left; width: 210px;}
+  #raw {height: 150px; width: 310px; margin-left: 0.5em}
+</style>
+<body>
+  <form id="frm">
+    プロフィール : <select id="profiles">
+      <option></option>
+    </select>
+    <br>
+    フォーマット : <select id="formats">
+      <option value="json">JSON</option>
+      <option value="xml">XML</option>
+    </select>
+    <br>
+    <br>
+    <div id="output"></div>
+  </form>
+
+  <textarea id="raw"></textarea>
+
+  <script>
+    $.get('http://localhost:7772/profiles', function(profile_names) {
+      $.each(profile_names, function(i, pname) {
+        $('#profiles').append('<option>' + pname + '</option>')
+      });
+    }, 'json');
+
+    $('#formats, #profiles').change(function() {
+      console.log(this);
+      var format = $('#formats').val();
+      $.get('http://localhost:7772/profile/' + $('#profiles').val() + '.' + format,
+          function(profile, stat, jqXHR) {
+
+        var cT = jqXHR.getResponseHeader('Content-Type');
+        $('#raw').val(profile);
+        $('#output').html('');
+        if (cT === 'application/json') {
+          $.each($.parseJSON(profile), function(k, v) {
+            $('#output').append('<b>' + k + '</b> : ' + v + '<br>');
+          });
+          return;
+        }
+        if (cT === 'application/xml') {
+          profile = jqXHR.responseXML.firstChild.childNodes;
+          $.each(profile, function(k, v) {
+            if (v && v.nodeType === 1) {
+              $('#output').append('<b>' + v.tagName + '</b> : ' + v.textContent + '<br>');
+            }
+          });
+        }
+      }, 'text');
+    });
+  </script>
+</body>
+</html>

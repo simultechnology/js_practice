@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title></title>
+</head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>
+<script src="http://code.jquery.com/ui/1.8.23/jquery-ui.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/raphael-min.js"></script>
+<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" href="css/style.css">
+<style type="text/css">
+    div#canv-target {
+        position: absolute;
+        left: -2000px;
+        top: -2000px;
+        width: 5000px;
+        height: 5000px;
+    }
+
+    div#overall-container {
+        border: 1px solid #777777;
+        width: 1000px;
+        height: 600px;
+        top: 0px;
+        left: 0px;
+        position: absolute;
+        z-index: 400;
+        background-color: #333;
+        overflow: hidden;
+        cursor: hand;
+    }
+
+    div#overall-container img {
+        cursor: default;
+    }
+
+    div.tooltip {
+        width: 70px;
+        position: absolute;
+        left: -9999px;
+        color: #333;
+        background: #EEE;
+        padding: 5px;
+        border: 1px solid #AAA;
+        z-index: 700
+    }
+
+    div.tooltip p {
+        color: #FFF;
+        background: #222;
+        /* padding: 5px 10px; */
+    }
+
+    img {
+        /*opacity: 0.5;*/
+    }
+
+    div#drag-area {
+        z-index: -100;
+        overflow: hidden;
+        width: 9999px;
+        height: 9999px;
+        /*top: -5000px;*/
+        /*left: -5000px;*/
+        position: absolute;
+        border-width: 0px;
+    }
+</style>
+<body>
+<div id="overall-container">
+    <div id="drag-area">
+        <div style="z-index: 300; position: absolute; top: 0px; left: 0px; " id="left-top-point">
+            <div id="draw-target" style="z-index: 100">
+                <div id="canv-target"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="tooltip"></div>
+</body>
+</html>
+<script type="text/javascript">
+
+document.body.style.cursor = "move";
+
+var positonContena = [];
+
+var centerPoint = {
+    top:0,
+    left:0
+};
+
+var lineColor;
+var backGroundColor;
+
+var rapheal;
+
+$(document).ready(function () {
+
+	rapheal = Raphael("canv-target", 5000, 5000);
+
+    $.ajax({
+        type:'GET',
+        url:'data/control.xml',
+        dataType:'xml',
+        success:function (xml) {
+            parseXml(xml);
+        }
+    });
+    $("#left-top-point").draggable();
+    //simple_tooltip("div","tooltip");
+});
+
+var DHTMLSprite = function (params, parent) {
+    // itemが既に存在しているかどうかチェックする
+    if (checkItemExist(positonContena, params.x, params.y)) {
+        return null;
+    }
+    if (!positonContena.length) {
+        positonContena.push({
+            x:params.x,
+            y:params.y
+        });
+    }
+
+    var itemName = params.itemName;
+    var len = itemName.length;
+    if (len > 9) {
+        len = 9;
+    }
+    var $element = params.$drawTarget.append('<div/>').find(':last').append('<div><img src="' + params.image + '"><div style="text-align:left; background-color:' + backGroundColor + '; width: ' + len * 18  + 'px; ">' + itemName + '</div></div>');
+    var elemStyle = $element[0].style;
+
+    elemStyle.left = params.x + 'px';
+    elemStyle.top = params.y + 'px';
+
+    $element.css({
+        position:'absolute',
+        visibility:!itemName ? 'visible' : 'hidden'
+    });
+
+    var lineContainer = [];
+    var parent = parent;
+    // クリック状態の保持
+    var clickedStatus = false;
+
+    var that = {
+        draw:function (x, y) {
+            elemStyle.left = x + 'px';
+            elemStyle.top = y + 'px';
+        },
+        show: function () {
+            elemStyle.display = 'block';
+//            if (lineContainer.length) {
+//                $(lineContainer).each(function (index, line) {
+//                    $(line).css({
+//                        //"display":"block"
+//                    });
+//                });
+//            }
+        },
+        hide: function () {
+            elemStyle.display = 'none';
+            if (lineContainer.length) {
+                $(lineContainer).each(function (index, line) {
+                    //$(line).css({
+                    //    "display" : "none"
+                    //});
+                    line.remove();
+                });
+                lineContainer = [];
+            }
+        },
+        destroy: function () {
+            $element.remove();
+        },
+        getElement: function () {
+            return $element;
+        },
+        getElemStyle: function () {
+            return elemStyle;
+        },
+        setXYtoElemStyle: function(x, y) {
+            elemStyle.left = x + 'px';
+            elemStyle.top = y + 'px';
+        },
+        drawLine: function (origX, origY, strokeWidth) {
+            var destX = elemStyle.left;
+            destX = destX.replace("px", "");
+            var destY = elemStyle.top;
+            destY = destY.replace("px", "");
+            var line = drawSVGLine(origX, origY, destX, destY, strokeWidth);
+            lineContainer.push(line);
+        },
+        makeItemVisible: function () {
+            $element.css({
+                visibility:'visible'
+            });
+        },
+        getParent: function() {
+            return parent;
+        },
+        getClickedStatus: function() {
+            return clickedStatus;
+        },
+        setClickedStatus: function(status) {
+            clickedStatus = status;
+        }
+    };
+
+    // baseItemから引かれるラインの保存コンテナ
+    var baseLineContainer = [];
+    var img = $element.find("img");
+
+    if (itemName) {
+//        img.css({opacity: 0.5});
+        //simple_tooltip(img,"tooltip");
+        var oriImagePath;
+        var parentDiv = $(img).parent();
+
+        $(img).hover(function () {
+                    if (!clickedStatus) {
+                        var imagePath = $(this).attr('src');
+                        oriImagePath = imagePath;
+                        var lastIndex = imagePath.lastIndexOf('/');
+                        var firstPart = imagePath.slice(0, lastIndex);
+                        var secondPart = 'b_' + imagePath.slice(lastIndex + 1);
+                        imagePath = firstPart + '/' + secondPart;
+                        $(img).css('visibility', 'hidden');
+                        $(parentDiv).css('position', 'absolute');
+                        $(parentDiv).css('top', -10);
+                        $(parentDiv).css('left', -10);
+                        $(img).attr('src', imagePath);
+                        $(img).css('visibility', 'visible');
+                    }
+                },
+                function () {
+                    if (!clickedStatus) {
+                        $(img).attr('src', oriImagePath);
+                        $(parentDiv).css('position', 'absolute');
+                        $(parentDiv).css('top', 0);
+                        $(parentDiv).css('left', 0);
+                    }
+                });
+    }
+
+    var children = params.children || null;
+    if (children && children.length) {
+        $(img).click(function () {
+            var top = elemStyle.top;
+            top = Number(top.replace("px", ""));
+            var left = elemStyle.left;
+            left = Number(left.replace("px", ""));
+            var moveDistance = {
+                top:top - centerPoint.top,
+                left:left - centerPoint.left
+            };
+            $("#left-top-point").animate({
+                left:-moveDistance.left,
+                top:-moveDistance.top
+
+            });
+
+            if (!clickedStatus) {
+                clickedStatus = true;
+
+                var thisSrc = $(this).attr('src');
+
+                $('img').each(function(idx, im) {
+                    var src = $(im).attr('src');
+                    if (src !== thisSrc) {
+                        if (src.indexOf('b_') != -1) {
+                            $(im).attr('src', src.replace('b_', ''));
+//                            $(parentDiv).css('position', 'absolute');
+//                            $(parentDiv).css('top', 0);
+//                            $(parentDiv).css('left', 0);
+                        }
+                    }
+                });
+            }
+            else {
+
+
+                var thisSrc = $(this).attr('src');
+
+                $('img').each(function(idx, im) {
+                    var src = $(im).attr('src');
+                    if (src !== thisSrc) {
+                        if (src.indexOf('b_') != -1) {
+                            $(im).attr('src', src.replace('b_', ''));
+//                            $(parentDiv).css('position', 'absolute');
+//                            $(parentDiv).css('top', 0);
+//                            $(parentDiv).css('left', 0);
+                        }
+                    }
+                });
+
+
+
+                var parentDiv = $(img).parent();
+                var imagePath = $(this).attr('src');
+                $(img).attr('src', imagePath.replace('b_', ''));
+                $(parentDiv).css('position', 'absolute');
+                $(parentDiv).css('top', 0);
+                $(parentDiv).css('left', 0);
+                clickedStatus = false;
+            }
+
+            var childItem = $.data($element, "childItem");
+            var childVisible = $.data($element, "childVisible");
+            if (childItem) {
+                removeThickLine();
+
+                if (childVisible) {
+                    $(childItem).each(function (index, item) {
+                        makeChildItemInvisible(item);
+                        item.destroy();
+                    });
+                    if (baseLineContainer.length) {
+                        $(baseLineContainer).each(function(idx, line) {
+                            line.hide();
+                        });
+                    }
+                    $.data($element, "childItem", null);
+                    $.data($element, "childVisible", false);
+                }
+                else {
+                    $(childItem).each(function (index, item) {
+                        item.show();
+                    });
+                    $.data($element, "childVisible", true);
+                }
+                return;
+            }
+
+            var childContainer = [];
+            var childItems = $(children[0]).children();
+            $(childItems).each(function (index, item) {
+                var sprite = makeChildItemFromParent(item, that);
+
+                setTimeout(function () {
+                    sprite.makeItemVisible();
+                }, 1000);
+
+                drawLineChildToParent(parent);
+//                var parentDiv = parent.getElement();
+//
+                var parentLeft = Number(parent.getElemStyle().left.replace("px", ""));
+                var parentTop = Number(parent.getElemStyle().top.replace("px", ""));
+                removeThickLine();
+
+                var temElem = parent.getElement();
+                if ($(temElem).find('img').attr('src').indexOf('images/base_drill.jpg') != -1) {
+                    parentLeft += 20;
+                    parentTop += 40;
+                    var baseline = drawSVGLine(left, top, parentLeft, parentTop, 2);
+                    baseLineContainer.push(baseline);
+                }
+                else {
+                    var line = drawSVGLine(left, top, parentLeft, parentTop, 2);
+                    lineContainer.push(line);
+                }
+
+                if (childItems.length == 1) {
+                    var strokeWidth = 2;
+                    sprite.drawLine(left, top, strokeWidth);
+                    var strokeWidth = 0.3;
+                }
+
+                sprite.drawLine(left, top, strokeWidth);
+                childContainer.push(sprite);
+            });
+            $.data($element, "childItem", childContainer);
+            $.data($element, "childVisible", true);
+        });
+    }
+
+    var url = params.url;
+    if (url) {
+        $element.click(function () {
+            removeThickLine();
+            var top = elemStyle.top;
+            top = Number(top.replace("px", ""));
+            var left = elemStyle.left;
+            left = Number(left.replace("px", ""));
+            var parentLeft = Number(parent.getElemStyle().left.replace("px", ""));
+            var parentTop = Number(parent.getElemStyle().top.replace("px", ""));
+            var line = drawSVGLine(left, top, parentLeft, parentTop, 2);
+            lineContainer.push(line);
+            drawLineChildToParent(parent);
+
+            window.open(url);
+            return false;
+        });
+    }
+
+    return that;
+};
+
+var drawLineChildToParent = function (sprite) {
+    var parentDiv = sprite.getElement();
+
+    var left = Number(sprite.getElemStyle().left.replace("px", ""));
+    var top = Number(sprite.getElemStyle().top.replace("px", ""));
+
+    var parentSprite = sprite.getParent();
+    if (parentSprite) {
+        var parentLeft = Number(parentSprite.getElemStyle().left.replace("px", ""));
+        var parentTop = Number(parentSprite.getElemStyle().top.replace("px", ""));
+        var parentElem = parentSprite.getElement();
+        if ($(parentElem).find('img').attr('src').indexOf('images/base_drill.jpg') != -1) {
+            parentLeft += 20;
+            parentTop += 40;
+            setTimeout(function () {
+                var baseline = drawSVGLine(left, top, parentLeft, parentTop, 2);
+                //baseLineContainer.push(baseline);
+            }, 1000);
+        }
+        else {
+            setTimeout(function () {
+                var line = drawSVGLine(left, top, parentLeft, parentTop, 2);
+                drawLineChildToParent(parentSprite);
+            }, 1000);
+        }
+    }
+};
+
+
+var makeChildItemInvisible = function (item) {
+    // item内のelementを取得
+    var cElem = item.getElement();
+    var cItem = $.data(cElem, "childItem");
+    var cVisible = $.data(cElem, "childVisible");
+    if (cVisible) {
+        if (cItem) {
+            $(cItem).each(function (idx, itm) {
+                makeChildItemInvisible(itm);
+                itm.hide();
+            });
+        }
+        $.data(cElem, "childVisible", false);
+    }
+    item.hide();
+};
+
+var parseXml = function (xml) {
+
+    var images = $(xml).find('image');
+    $(images).each(function(idx, image) {
+        var src = $(image).text();
+
+        $('<img/>')
+                .attr('src', src)
+                .load(function () {
+                    //images.remove(src);
+                });
+
+        var lastIndex = src.lastIndexOf('/');
+        var firstPart = src.slice(0, lastIndex);
+        var secondPart = 'b_' + src.slice(lastIndex + 1);
+        var b_src = firstPart + '/' + secondPart;
+
+        $('<img/>')
+                .attr('src', b_src)
+                .load(function () {
+                });
+    });
+
+    var bgColor = $(xml).find('root > BgColor').text();
+    lineColor = $(xml).find('root > LineColor').text();
+    var itemNameColor = $(xml).find('root > ItemNameColor').text();
+    if (bgColor) {
+        $('div#overall-container').css('background-color', bgColor);
+        backGroundColor = bgColor;
+    }
+    if (itemNameColor) {
+        $('body').css('color', itemNameColor);
+    }
+
+
+    // ルートItemの表示処理
+    var baseItem = $(xml).find('root > BaseItem');
+    var x = $(baseItem).find('x:nth(0)').text();
+    var y = $(baseItem).find('y:nth(0)').text();
+
+    var baseSprite = DHTMLSprite({
+        itemName:"",
+        image:$(baseItem).find('image:nth(0)').text(),
+        x:x,
+        y:y,
+        $drawTarget:$('#draw-target')
+    });
+    centerPoint = {top:y, left:x};
+
+    // ルートItem周りのItem表示処理
+    var items = $(xml).find('root > item');
+    $(items).each(function (index, item) {
+        var sprite = makeChildItemFromParent(item, baseSprite);
+
+        setTimeout(function () {
+            sprite.makeItemVisible();
+        }, 1000);
+
+//            var beginX = Number(centerPoint.left) + 50;
+//            var beginY = Number(centerPoint.top) + 70;
+        var beginX = Number(centerPoint.left) + 20;
+        var beginY = Number(centerPoint.top) + 40;
+        var elemStyle = sprite.getElemStyle();
+        var destX = elemStyle.left;
+        destX = destX.replace("px", "");
+        var destY = elemStyle.top;
+        destY = destY.replace("px", "");
+        drawSVGLine(beginX, beginY, destX, destY);
+    });
+};
+
+var makeChildItemFromParent = function (item, parent) {
+    var itemName = $(item).find('itemName:nth(0)').text();
+    var image = $(item).find('image:nth(0)').text();
+    var x = $(item).find('x:nth(0)').text();
+    var y = $(item).find('y:nth(0)').text();
+    var url = $(item).find('url');
+    var ite = $(item).find('item');
+    if (!ite.length && url.length) {
+        url = $(item).find('url:nth(0)').text();
+    }
+    else {
+        url = null;
+    }
+
+    var children = $(item).find('children');
+    var params = {
+        itemName:itemName,
+        image:image,
+        x:x,
+        y:y,
+        children:children,
+        url:url,
+        $drawTarget:$('#draw-target')
+    }
+    return DHTMLSprite(params , parent);
+};
+
+var checkItemExist = function (array, x, y) {
+    var exist = false;
+    $(array).each(function (index, data) {
+        if (x == data.x && y == data.y) {
+            exist = true;
+        }
+    });
+    return exist;
+};
+
+var drawSVGLine = function (beginX, beginY, endX, endY, strokeWidth) {
+
+    if (!strokeWidth) {
+        strokeWidth = 0.3;
+    }
+
+    var margin = 2000;
+    beginX = Number(beginX) + margin + 30;
+    beginY = Number(beginY) + margin + 30;
+    endX = Number(endX) + margin + 30;
+    endY = Number(endY) + margin + 30;
+
+    //var line = rapheal.line(beginX, beginY, endX, endY, {stroke: '#999999', strokeWidth: 0.3});
+    var line = rapheal.path("M " + beginX + " " + beginY + " " + beginX +" " + beginY); //, {stroke:'#999999', strokeWidth:0.3});
+
+    if (strokeWidth > 1) {
+        line.node.setAttribute("class","rvml thickline");
+    }
+
+    line.attr({
+            'stroke' : lineColor,
+            'stroke-width' : strokeWidth
+        });
+
+    //var params = {svgX2:endX, svgY2:endY};
+    line.animate({path:"M " + beginX + " " + beginY + " " + endX + " " + endY}, 1000);
+    return line;
+}
+
+var removeThickLine = function() {
+    $('path').each(function(idx, line) {
+        var strokeWidth = $(line).attr('stroke-width');
+        if (strokeWidth == 2) {
+            $(line).remove();
+        }
+    });
+    $('.rvml').each(function(idx, line) {
+        var strokeWidth = line.getAttribute('strokeweight');
+        if (Number(strokeWidth) > 1) {
+            $(line).remove();
+        }
+    });
+    $('.thickline').each(function(idx, line) {
+        $(line).remove();
+    });
+}
+
+var simple_tooltip = function (target_items, name) {
+    $(target_items).each(function (i) {
+        $("body").append("<div class='" + name + "' id='" + name + i + "'>click!</div>");
+        var my_tooltip = $("#" + name + i);
+
+        if ($(this).attr("title") != "" && $(this).attr("title") != "undefined") {
+
+            $(this).removeAttr("title").mouseover(function () {
+                my_tooltip.css({opacity:0.8, display:"none"}).fadeIn(400);
+            }).mousemove(function (kmouse) {
+                        var border_top = $(window).scrollTop();
+                        var border_right = $(window).width();
+                        var left_pos;
+                        var top_pos;
+                        var offset = 20;
+                        if (border_right - (offset * 2) >= my_tooltip.width() + kmouse.pageX) {
+                            left_pos = kmouse.pageX + offset;
+                        } else {
+                            left_pos = border_right - my_tooltip.width() - offset;
+                        }
+
+                        if (border_top + (offset * 2) >= kmouse.pageY - my_tooltip.height()) {
+                            top_pos = border_top + offset;
+                        } else {
+                            top_pos = kmouse.pageY - my_tooltip.height() - offset;
+                        }
+
+                        my_tooltip.css({left:left_pos, top:top_pos});
+                    }).mouseout(function () {
+                        my_tooltip.css({
+                            left:"-9999px"
+                        });
+                    });
+        }
+
+    });
+}
+</script>

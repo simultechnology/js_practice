@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+<script>
+  var who = 'ryan';
+  function cb(o) {
+    var profile = o.name + ' : ' + o.description;
+    var body = document.getElementsByTagName('body')[0];
+    body.innerText = profile;
+  }
+
+  var s = document.createElement('script');
+  s.src = 'http://localhost:7771/?callback=cb&who=' + who;
+  document.getElementsByTagName("head")[0].appendChild(s);
+</script>
+<body>
+
+</body>
+</html>
