@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>translator API sample</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body onload="onLoad();">
+<h1>日本語から英語へ翻訳します。</h1>
+
+<div class="row" id="form-container">
+  <div class="col-md-1"></div>
+  <div class="col-md-5">
+    <textarea class="form-control" rows="3" id="source"></textarea>
+  </div>
+  <div class="col-md-5">
+      <textarea class="form-control" rows="3" id="target"></textarea>
+  </div>
+  <div class="col-md-1"></div>
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script>
+  var g_token = '';
+
+  function onLoad() {
+    getToken();
+    setInterval(getToken, 9 * 60 * 1000);
+  }
+
+  function getToken() {
+    var requestStr = "./token.php";
+
+    $.ajax({
+      url: requestStr,
+      type: "GET",
+      cache: true,
+      dataType: 'json',
+      success: function (data) {
+        g_token = data.access_token;
+      }
+    });
+  }
+
+  function translate(text, from, to) {
+    var p = {};
+    p.text = text;
+    p.from = from;
+    p.to = to;
+    p.oncomplete = 'ajaxTranslateCallback';
+    p.appId = "Bearer " + g_token;
+
+    var requestStr = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate";
+
+    $.ajax({
+      url: requestStr,
+      type: "GET",
+      data: p,
+      dataType: 'jsonp',
+      cache: true
+    });
+  }
+
+  function ajaxTranslateCallback(response) {
+    $("#target").text(response);
+  }
+
+  function translateSourceTarget() {
+    var src = $("#source").val();
+    translate(src, "ja", "en");
+  }
+
+  $('#source').on({
+    keyup: function() {
+      var that = this;
+      setTimeout(function() {
+        translate($(that).val(), "ja", "en");
+      }, 2000);
+    }
+  });
+
+  var sampleText = 'これは具体例です。何か適当な文章を作成して入力して下さい。';
+
+  var chars = sampleText.split('');
+  var len = chars.length, index = 0, buffer = '';
+
+  var timerId = setInterval(function() {
+    buffer += chars[index];
+    $("#source").text(buffer);
+    translate(buffer, "ja", "en");
+    index++;
+    if (index === len) {
+      clearInterval(timerId);
+      setTimeout(function() {
+        $("#source").text('');
+        $("#target").text('');
+        $("#source").focus();
+      }, 2000);
+    }
+  }, 100);
+
+</script>
+</body>
+</html>

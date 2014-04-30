@@ -1,0 +1,94 @@
+<html en="ja">
+<meta charset="utf-8">
+<head>
+  <link rel='stylesheet' type='text/css' href="css/style.css">
+</head>
+
+<body onload="onLoad();">
+<textarea id="source"></textarea>
+<button id="translateButton" onclick="translateSourceTarget();">日本語から英語へ翻訳します。</button>
+<textarea id="target"></textarea>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+  var g_token = '';
+
+  function onLoad() {
+    // Get an access token now.  Good for 10 minutes.
+    getToken();
+    setInterval(getToken, 9 * 60 * 1000);
+  }
+
+  function getToken() {
+    var requestStr = "./token.php";
+
+    $.ajax({
+      url: requestStr,
+      type: "GET",
+      cache: true,
+      dataType: 'json',
+      success: function (data) {
+        g_token = data.access_token;
+      }
+    });
+  }
+
+  function translate(text, from, to) {
+    var p = {};
+    p.text = text;
+    p.from = from;
+    p.to = to;
+    p.oncomplete = 'ajaxTranslateCallback';
+    p.appId = "Bearer " + g_token;
+
+    var requestStr = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate";
+
+    $.ajax({
+      url: requestStr,
+      type: "GET",
+      data: p,
+      dataType: 'jsonp',
+      cache: true
+    });
+  }
+
+  function ajaxTranslateCallback(response) {
+    $("#target").text(response);
+  }
+
+  function translateSourceTarget() {
+    var src = $("#source").val();
+    translate(src, "ja", "en");
+  }
+
+  $('#source').on({
+    keyup: function() {
+      var src = $(this).val();
+      translate(src, "ja", "en");
+    }
+  });
+
+  var sampleText = 'これは具体例です。何か適当な文章を作成して入力して下さい。';
+
+  var chars = sampleText.split('');
+  var len = chars.length, index = 0, buffer = '';
+
+  var timerId = setInterval(function() {
+    buffer += chars[index];
+    $("#source").text(buffer);
+    translate(buffer, "ja", "en");
+    index++;
+    if (index === len) {
+      clearInterval(timerId);
+      setTimeout(function() {
+        $("#source").text('');
+        $("#target").text('');
+        $("#source").focus();
+      }, 2000);
+    }
+  }, 100);
+
+</script>
+
+</body>
+</html>

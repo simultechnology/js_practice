@@ -1,0 +1,39 @@
+/*#source, #target {*/
+  /*position:relative;*/
+  /*float:left;*/
+  /*width:400px;*/
+  /*height: 50px;*/
+  /*padding:10px;*/
+  /*margin: 10px;*/
+  /*border: 1px solid black;*/
+/*}*/
+
+/*#translateButton {*/
+  /*float:left;*/
+  /*margin: 10px;*/
+  /*height:50px;*/
+/*}*/
+
+html, body {
+  height: 100%;
+}
+
+#target-container {
+  background-color: #5cb85c;
+}
+
+#source-container {
+  background-color: #f0ad4e;
+}
+
+#form-container {
+  height: 80%;
+}
+
+#form-container div {
+  /*height: 100%;*/
+}
+
+#form-container textarea {
+  margin-bottom: 10%;
+}
