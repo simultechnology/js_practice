@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<style>
+  li {
+    opacity: 0;
+  }
+</style>
+<body>
+  <h1>test</h1>
+  <div id="result"><ul id="res-ul"></ul></div>
+  <script>
+
+    setTimeout(function() {
+      $.ajax({
+        dataType: "json",
+        url: 'test.php',
+        success: function(data) {
+          var buf = '<li>名前 : ' +  data['first-name'] + '</li>';
+          $(buf).appendTo('#res-ul');
+          var buf2 = '<li>名字 : ' +  data['last-name'] + '</li>';
+          $(buf2).appendTo('#res-ul');
+
+          $("li").animate({
+            opacity: 1,
+            marginLeft: "0.6in",
+            fontSize: "3em"
+
+          }, 3000);
+
+          setTimeout(function() {
+            $('ul').css('display', 'none');
+          }, 5000);
+
+
+        }
+      });
+    }, 2000);
+
+  </script>
+</body>
+</html>
