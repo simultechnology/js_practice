@@ -8,7 +8,9 @@
   <p>Hello 1</p>
   <p>Hello 2</p>
   <p>Hello 3</p>
-  <div>Test</div>
+  <div>Test1</div>
+  <div>Test2</div>
+  <div>Test3</div>
   <div id="data-sample">
     <p>Hello 1</p>
     <p>Hello 2</p>
@@ -23,7 +25,7 @@
         "font-weight": "bold"
       });
 
-    var div = d3.select("div");
+    var div = d3.selectAll("div");
 
     function changeDivStyleByTimer() {
       div.style("font-size", function() {

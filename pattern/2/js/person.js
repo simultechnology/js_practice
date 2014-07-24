@@ -1,42 +1,7 @@
 /**
- * JavaScriptアプリケーション
  *
- * @module myapp
- *
+ * Created by ishi on 2014/07/02.
  */
-
-var MYAPP = {};
-
-/**
- * 数学ユーティリティ
- * @namespace MYAPP
- * @class math_stuff
- */
-MYAPP.math_stuff = {
-    /**
-     * 和を計算
-     *
-     * @method sum
-     * @param {Number} a 数値1
-     * @param {Number} b 数値2
-     * @returns {Number} 2つの数の和
-     */
-    sum: function (a, b) {
-        return a + b;
-    },
-
-    /**
-     * 積を計算
-     *
-     * @method multi
-     * @param {Number} a 数値1
-     * @param {Number} b 数値2
-     * @returns {Number}
-     */
-    multi: function (a, b) {
-        return a * b;
-    }
-};
 
 /**
  * Personオブジェクトを作成
