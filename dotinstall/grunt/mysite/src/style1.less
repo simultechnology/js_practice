@@ -1,0 +1,20 @@
+/*!
+サンプル
+*/
+@h1-color: #00ff00;
+@h2-color: darken(@h1-color, 20%);
+@h1-size: 40px;
+@h2-size: @h1-size - 4px;
+
+@header: h;
+
+@{header}1 {
+    font-size: @h1-size;
+    color: @h1-color;
+}
+
+@{header}2 {
+    font-size: @h2-size;
+    color: @h2-color;
+}
+
