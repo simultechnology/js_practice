@@ -1,0 +1,27 @@
+/*!
+サンプル
+*/
+@h1-color: red;
+@h2-color: darken(@h1-color, 10%);
+@h1-size: 28px;
+@h2-size: @h1-size - 4px;
+
+@header: .myHeader;
+@color: color;
+@dir: '/images';
+
+@{header}1 {
+    font-size: @h1-size;
+    @{color}: @h1-color;
+}
+
+@{header}2 {
+    font-size: @h2-size;
+    @{color}: @h2-color;
+    background: url('@{dir}/bg.png');
+}
+
+@{header}3 {
+    font-size: @h2-size;
+    @{color}: @h2-color;
+}

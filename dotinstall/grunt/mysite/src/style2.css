@@ -1,0 +1,24 @@
+/*
+header {
+    font-size: 18px;
+}
+
+header a {
+    color: red;
+}
+*/
+header {
+  font-size: 18px;
+}
+header a {
+  color: #ff0000;
+}
+header a:hover {
+  color: green;
+}
+.button-ok {
+  color: green;
+}
+.button-ng {
+  color: red;
+}
