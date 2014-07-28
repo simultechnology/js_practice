@@ -1,8 +1,9 @@
-/**
- *
- * Created by ishi on 2014/07/28.
- */
 (function () {
-    var user = { 'name': "tissi" };
+    var user = {
+        'name': "tissi",
+        'age': 37,
+        'home': 'Tokyo'
+    };
+    console.log(user);
     hello(user);
 }());
