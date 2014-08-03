@@ -8,12 +8,36 @@
     h1 {
         color: khaki;
     }
+
+    img {
+        width: 15%;
+        opacity: 0.5;
+        background-color: lightcoral;
+    }
+
+    .middle {
+        width: 103%;
+    }
 </style>
+<!-- livereload script -->
+<script type="text/javascript">
+    document.write('<script src="http://'
+    + (location.host || 'localhost').split(':')[0]
+    + ':35729/livereload.js?snipver=1" type="text/javascript"><\/script>')
+</script>
 <body>
-<p><img src=""></p>
-
-
-<script src="http://js_practice:35729/livereload.js"></script>
+<p>test!</p>
+<p><img src="images/genpei_silk.png"></p>
+<p class="middle"><img src="images/noritsune_black.png"></p>
+<p><img src="images/ryuuguunotsukai.png"></p>
 <script src="dist/jquery.js"></script>
+<script src="dist/script.js"></script>
+<script>
+    $(function () {
+        $('img').showsize({
+            size: 20
+        });
+    });
+</script>
 </body>
 </html>
