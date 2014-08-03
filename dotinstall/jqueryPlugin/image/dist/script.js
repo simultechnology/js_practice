@@ -1,3 +1,8 @@
+function hoge() {
+    console.log('hoge');
+    console.log('hoge');
+    console.log('aaaaa')
+};
 ;
 (function ($) {
 
@@ -47,4 +52,8 @@
         opacity: 0.9
     };
 
-})(jQuery);
+})(jQuery);;
+function testName(name) {
+    console.log('this is test!!');
+    console.log(name);
+};
