@@ -1,0 +1,13 @@
+body{width: 100%;height: 100%;font-size: 80%;}
+#mtext{margin-bottom: 10px;}
+button{padding: 10px;margin: 10px; font-size:120%;}
+#myMap{position:relative; float:left; width:500px; height:500px;}
+/* #mylist{float:left;background-color: #ccc; height:500px;font-size: 70%;} */
+#mylistul{margin-right: 30px;}
+li{list-style-type: none;}
+#input{ width: 200px;clear: both}
+/* #memo{width: 500px} */
+#comment{color:#f42828}
+
+
+

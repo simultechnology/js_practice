@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>経路・検索</title>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.4.4.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&mkt=ja-jp"></script>
+    <script type="text/javascript">
+        var map = null;
+        function GetMap() {
+            var options = {
+                credentials: "AsreAgbxC6migJYko4L2GNMiV62LNRLpypoLepymSRQFlPZTz2htb--QXADRAuMQ"
+            };
+            map = new Microsoft.Maps.Map(document.getElementById("map"), options);
+// map = new Microsoft.Maps.Map(document.getElementById("map"), options);
+// の次の行に以下のコードを追加
+Microsoft.Maps.Pushpin.prototype.mouseoverHanderId = null;
+Microsoft.Maps.Pushpin.prototype.mouseoutHanderId = null;
+
+// map.entities コレクション内のオブジェクトが削除されるとき（再検索時）にイベントハンドラー関連付けの削除
+var id = Microsoft.Maps.Events.addHandler(map.entities, "entityremoved", function (e) {
+    Microsoft.Maps.Events.removeHandler(e.entity.mouseoverHandlerId);
+    Microsoft.Maps.Events.removeHandler(e.entity.mouseoutHandlerId);
+});
+
+// Web ページがアンロードされるときにイベントハンドラー関連付けの削除
+$(window).unload(function () {
+    map.entities.clear();
+    Microsoft.Maps.Events.removeHandler(id);
+});
+        }
+	// map は Map オブジェクト
+map.getCredentials(function (credentials) {
+    if (credentials !== null) {
+        // credentials を Bing Maps Key に指定し REST Services を呼び出せます
+    }
+});
+function search() {
+    map.entities.clear(); // 地図上のオブジェクトを削除
+    map.getCredentials(createGeocodeRequest);
+}
+function createGeocodeRequest(credentials) {
+    if (credentials === null) {
+        alert("Credentials is null.");
+        return;
+    }
+
+    $.ajax({
+        type: "GET",
+        url: "http://dev.virtualearth.net/REST/v1/Locations",
+        dataType: "jsonp",
+        data: {
+            key: credentials,
+            query: $("#query").val(),
+            c: "ja-JP",
+            o: "json"
+        },
+        jsonp: "jsonp",
+        success: function (data, dataType) {
+            geocodeCallback(data);
+        },
+	error:function(e){
+	    alert(e);
+	}
+    });
+}
+function geocodeCallback(response) {
+    if (response && response.errorDetails) {
+        var text = "";
+        $.each(response.errorDetails, function () {
+	    // map.entities.push(pin); の次の行に以下のコードを追加
+		addEventHnadler(pin, this.name);
+            text += this + "\n";
+        });
+        alert(text); // error!
+        return false;
+    }
+
+    if (response &&
+        response.resourceSets &&
+        response.resourceSets.length > 0 &&
+        response.resourceSets[0].resources &&
+        response.resourceSets[0].resources.length > 0) {
+
+        // 地図の表示範囲設定(1件目の情報を使用)
+        var bbox = response.resourceSets[0].resources[0].bbox;
+        var bounds = Microsoft.Maps.LocationRect.fromLocations(
+            new Microsoft.Maps.Location(bbox[0], bbox[1]), new Microsoft.Maps.Location(bbox[2], bbox[3]));
+        map.setView({ bounds: bounds });
+
+        // プッシュピンの追加
+        var code = "A".charCodeAt(0);
+        $.each(response.resourceSets[0].resources, function () {
+            var point = this.point;
+            var location = new Microsoft.Maps.Location(point.coordinates[0], point.coordinates[1]);
+            var pin = new Microsoft.Maps.Pushpin(location, { text: String.fromCharCode(code++) });
+            map.entities.push(pin);
+        });
+    } else {
+        alert("No result.");
+    }
+}
+function addEventHnadler(pin, text) {
+    // mouseover イベント処理
+    pin.mouseoverHandlerId = Microsoft.Maps.Events.addHandler(pin, "mouseover", function (e) {
+        // Pushpin のピクセル座標取得
+        var point = map.tryLocationToPixel(pin.getLocation(), Microsoft.Maps.PixelReference.page);
+
+        // div 要素のテキストと位置の設定
+        var info = $("#info");
+        info.text(text);
+        info.css("left", point.x - Math.floor(info.outerWidth() / 2) + "px");
+        info.css("top", point.y - info.outerHeight() - pin.getHeight() - 10 + "px");
+
+        // div 要素の表示
+        info.stop(true, false).fadeTo("normal", 1);
+    });
+
+    // mouseout イベント処理
+    pin.mouseoutHandlerId = Microsoft.Maps.Events.addHandler(pin, "mouseout", function (e) {
+        $("#info").stop(true, false).fadeTo("normal", 0);
+    });
+}
+function route() {
+    map.getCredentials(createRouteRequest);
+}
+function createRouteRequest(credentials) {
+    if (credentials === null) {
+        alert("Credentials is null.");
+        return;
+    }
+
+    $.ajax({
+        type: "GET",
+        url: "http://dev.virtualearth.net/REST/v1/Routes",
+        dataType: "jsonp",
+        data: {
+            key: credentials,
+            "wp.0": $("#start").val(),
+            "wp.1": $("#end").val(),
+            routePathOutput: "Points",
+            c: "ja-JP",
+            o: "json"
+        },
+        jsonp: "jsonp",
+        success: function (data, dataType) {
+            routeCallback(data);
+        }
+    });
+}
+function routeCallback(response) {
+    if (response && response.errorDetails) {
+        var text = "";
+        $.each(response.errorDetails, function () {
+            text += this + "\n";
+        });
+        alert(text); // error!
+        return false;
+    }
+
+    if (response &&
+        response.resourceSets &&
+        response.resourceSets.length > 0 &&
+        response.resourceSets[0].resources &&
+        response.resourceSets[0].resources.length > 0) {
+
+        var resource = response.resourceSets[0].resources[0];
+
+        // 地図の表示範囲設定(1件目の情報を使用)
+        var bbox = resource.bbox;
+        var bounds = Microsoft.Maps.LocationRect.fromLocations(
+            new Microsoft.Maps.Location(bbox[0], bbox[1]), new Microsoft.Maps.Location(bbox[2], bbox[3]));
+        map.setView({ bounds: bounds });
+
+        // ルートの描画(ポリラインの描画)
+        var routeline = resource.routePath.line;
+        var routepoints = new Array();
+
+        $.each(routeline.coordinates, function () {
+            routepoints.push(new Microsoft.Maps.Location(this[0], this[1]));
+        });
+
+        var polyline = new Microsoft.Maps.Polyline(routepoints, { strokeColor: new Microsoft.Maps.Color(200, 0, 0, 200) });
+        map.entities.push(polyline);
+    }
+}
+    </script>
+</head>
+<body onload="GetMap();">
+    <h1>BingAPI
+        経路・検索</h1>
+    <div id="map" style="position: relative; width: 512px; height: 512px"></div>
+    <div id="info" style="position: absolute; border: 1px solid gray; background-color: white; padding: 5px; display: none;"></div>
+    <div>
+        <input id="query" type="text" value="東京" />
+	<input type="button" value="検索" onclick="search();" /><br>
+	<input id="start" type="text" value="Seattle" />
+	<input id="end" type="text" value="Portland" />
+            <input type="button" value="探索" onclick="route()" />
+    </div>
+</body>
+</html>
