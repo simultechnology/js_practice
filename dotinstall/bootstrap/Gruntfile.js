@@ -25,11 +25,24 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+
+        watch: {
+            options: {
+                livereload: true
+            },
+            css: {
+                files: 'css/*.css'
+            },
+            html: {
+                files: '*.html'
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['copy']);
+    grunt.registerTask('default', ['copy', 'watch']);
 
 };
