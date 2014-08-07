@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<body>
+
+<script>
+
+    function generateCounter() {
+        var initNumber = 0;
+
+        var newFunc = function () {
+            initNumber += 1;
+            return initNumber;
+        };
+        return newFunc;
+    }
+
+    var counter = generateCounter();
+
+    console.log(counter());
+    console.log(counter());
+    console.log(counter());
+    console.log(counter());
+    console.log(counter());
+    console.log(counter());
+    console.log(counter());
+
+</script>
+</body>
+</html>

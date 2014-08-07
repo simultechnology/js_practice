@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<body>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    for (var i = 0; i< 10; i++) {
+        var button = $('<input type="button" value="button">');
+//        $(button).on('click', function () {
+//            alert(i);
+//        });
+        $(button).on('click', generateNumber(i));
+        $(button).appendTo('body');
+        $('<br>').appendTo('body');
+    }
+
+    function generateNumber(i) {
+        var number = i + 1;
+
+        return function () {
+            alert(number);
+        }
+    }
+</script>
+</body>
+</html>
