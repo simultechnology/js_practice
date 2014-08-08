@@ -18,17 +18,24 @@
 </script>
 <body>
 <div class="container" style="padding: 20px 0;">
-    <table class="table table-striped table-bordered table-hover table-condensed">
-        <thead>
-        <tr><th>ID</th><th>score</th></tr>
-        </thead>
-        <tbody>
-        <tr><td>@ishikawa</td><td>100</td></tr>
-        <tr class="warning"><td>@taka</td><td>100</td></tr>
-        <tr><td>@hoge</td><td>100</td></tr>
-        </tbody>
-    </table>
+    <ul class="breadcrumb">
+        <li><a href="">Home</a></li>
+        <li><a href="">Users</a></li>
+        <li class="active">Ishikawa</li>
+    </ul>
 
+    <ul class="pagination">
+        <li class="disabled"><a href="">&laquo;</a></li>
+        <li class="active"><a href="">1</a></li>
+        <li><a href="">2</a></li>
+        <li><a href="">3</a></li>
+        <li><a href="">&raquo;</a></li>
+    </ul>
+
+    <ul class="pager">
+        <li class="previous"><a href="">前へ</a></li>
+        <li class="next"><a href="">次へ</a></li>
+    </ul>
 </div>
 <script src="jquery/jquery.js"></script>
 <script src="bootstrap/js/bootstrap.js"></script>
