@@ -1,15 +1,17 @@
-(function () {
+(function (global) {
 
-    function add(x, y) {
+    global.MyApp = {};
+
+    global.MyApp.add = function (x, y) {
         if (typeof y === 'undefined') {
             return function (y) {
                 return x + y;
             };
         }
         return x + y;
-    }
+    };
 
-    function schonfinkelize(fn) {
+    global.MyApp.schonfinkelize = function (fn) {
         var slice = Array.prototype.slice,
             stored_args = slice.call(arguments, 1);
         return function () {
@@ -17,5 +19,5 @@
                 args = stored_args.concat(new_args);
             return fn.apply(null, args);
         };
-    }
-});
+    };
+}(window));
