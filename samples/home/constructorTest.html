@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<body>
+    <script>
+        var L = {};
+
+L.Class = function () {};
+
+L.Class.extend = function (props) {
+
+    // extended class with the new prototype
+    var NewClass = function () {
+
+        // call the constructor
+        if (this.initialize) {
+            this.initialize.apply(this, arguments);
+        }
+
+        // call all constructor hooks
+        if (this._initHooks) {
+            this.callInitHooks();
+        }
+    };
+
+    console.log(NewClass.constructor);
+
+    // instantiate class without calling constructor
+    var F = function () {};
+    F.prototype = this.prototype;
+
+    var proto = new F();
+    proto.constructor = NewClass;
+
+    NewClass.prototype = proto;
+
+    console.log(NewClass.prototype.constructor);
+    console.log(NewClass.constructor);
+};
+
+        L.Class.extend({name: 'ishikawa'});
+    </script>
+</body>
+</html>
